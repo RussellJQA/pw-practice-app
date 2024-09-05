@@ -1,0 +1,21 @@
+This project was cloned to my PC using:
+
+    D:
+    cd D:\dev\_ts\testguild     
+    git clone https://github.com/bondar-artem/pw-practice-app
+        // This pw-practice-app is a:
+            // modified and more lightweight version of original application to practice UI Automation with Playwright
+            //  at htps://github.com/akveo/ngx-admin
+        // Both applications are MIT-licensed
+
+Then, within the resulting D:\dev\_ts\testguild\pw-practice-app folder, I needed to do:
+
+    npm init playwright@latest --force
+
+And start the pw-practice-app running on http://localhost:4200, by typing (in the Terminal):
+
+    npm start
+
+and waiting for the following output to appear:
+
+    ** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
