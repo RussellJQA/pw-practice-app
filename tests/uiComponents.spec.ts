@@ -43,6 +43,45 @@ test.describe('Form Layouts page', () => {
         await usingTheGridEmailForm.getByRole('radio', {name: "Option 2"}).check({force: true});
         expect(await usingTheGridEmailForm.getByRole('radio', {name: 'Option 1'}).isChecked()).toBeFalsy();
         expect(await usingTheGridEmailForm.getByRole('radio', {name: 'Option 2'}).isChecked()).toBeTruthy();
-
     })
+
+    // My somewhat cleaner implementation
+    test('radio buttons2', async({page}) => {
+        const usingTheGridEmailForm = page.locator('nb-card', {hasText: "Using the Grid"});
+
+        const radioButton1 = usingTheGridEmailForm.getByRole('radio', {name: "Option 1"})
+        await radioButton1.check({force: true});
+
+        // generic assertion
+        const radioStatus1 = await radioButton1.isChecked();
+        expect(radioStatus1).toBeTruthy();
+
+        //locator assertion
+        await expect(radioButton1).toBeChecked();
+
+        // Verify that "Check"-ing the 2nd option un-checks the 1st option
+        const radioButton2 = usingTheGridEmailForm.getByRole('radio', {name: "Option 2"})
+        await radioButton2.check({force: true});
+        expect(await radioButton1.isChecked()).toBeFalsy();
+        expect(await radioButton2.isChecked()).toBeTruthy();
+    })
+})
+
+test('check boxes', async({page}) => {
+    await page.getByRole('checkbox', {name: "Hide on click"}).uncheck({force: true});
+    await page.getByRole('checkbox', {name: "Prevent arising of duplicate toast"}).check({force: true});
+
+    // Check all checkboxes on the page
+    const allBoxes = page.getByRole('checkbox');
+    for(const box of await allBoxes.all()) {
+        await box.check({force: true});
+        // expect(await box.isChecked()).toBeTruthy(); // This works, but TabNine suggests the following instead
+        await expect(box).toBeChecked();
+    }
+
+    for(const box of await allBoxes.all()) {
+        await box.uncheck({force: true});
+        //expect(await box.isChecked()).toBeFalsy(); // This works, but TabNine suggests the following instead
+        await expect(box).not.toBeChecked();
+    }
 })
