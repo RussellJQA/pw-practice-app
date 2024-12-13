@@ -65,6 +65,7 @@ test.describe('Form Layouts page', () => {
         expect(await radioButton1.isChecked()).toBeFalsy();
         expect(await radioButton2.isChecked()).toBeTruthy();
     })
+
 })
 
 test('check boxes', async({page}) => {
@@ -83,5 +84,56 @@ test('check boxes', async({page}) => {
         await box.uncheck({force: true});
         //expect(await box.isChecked()).toBeFalsy(); // This works, but TabNine suggests the following instead
         await expect(box).not.toBeChecked();
+    }
+})
+
+test('lists and dropdowns', async({page}) => {
+    const dropDownMenu = page.locator('ngx-header nb-select');
+    await dropDownMenu.click();
+    
+    // page.getByRole('listitem'); // when the list item has a LI tag
+
+    // const optionList = page.getByRole('list').locator('nb-option'); // Use this role when the list has a UL tag
+    const optionList = page.locator('nb-option-list nb-option');
+    await expect(optionList).toHaveText(["Light", "Dark", "Cosmic", "Corporate"]);
+    await optionList.filter({hasText: "Cosmic"}).click();
+
+    const header = page.locator('nb-layout-header');
+    await expect(header).toHaveCSS('background-color', 'rgb(50, 50, 89)');
+
+    const colors = {
+        "Light": "rgb(255, 255, 255)",
+        "Dark": "rgb(34, 43, 69)",
+        "Cosmic": "rgb(50, 50, 89)",
+        "Corporate": "rgb(255, 255, 255)"
+    };
+
+    await dropDownMenu.click();
+    for(const color in colors){
+        await optionList.filter({hasText: color}).click();
+        await expect(header).toHaveCSS('background-color', colors[color]);
+        if(color != "Corporate")
+            await dropDownMenu.click();
+    }
+})
+
+// My somewhat cleaner implementation
+test('lists and dropdowns 2', async({page}) => {
+    const dropDownMenu = page.locator('ngx-header nb-select');
+    const optionList = page.locator('nb-option-list nb-option');
+    const header = page.locator('nb-layout-header');
+
+    const colors = {
+        "Light": "rgb(255, 255, 255)",
+        "Dark": "rgb(34, 43, 69)",
+        "Cosmic": "rgb(50, 50, 89)",
+        "Corporate": "rgb(255, 255, 255)"
+    };  
+
+    for(const color in colors){
+        await dropDownMenu.click();
+        await expect(optionList).toHaveText(["Light", "Dark", "Cosmic", "Corporate"]);
+        await optionList.filter({hasText: color}).click();
+        await expect(header).toHaveCSS('background-color', colors[color]);
     }
 })
