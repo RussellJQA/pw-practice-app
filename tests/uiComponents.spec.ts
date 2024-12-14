@@ -45,7 +45,7 @@ test.describe('Form Layouts page', () => {
         expect(await usingTheGridEmailForm.getByRole('radio', {name: 'Option 2'}).isChecked()).toBeTruthy();
     })
 
-    // My somewhat cleaner implementation
+    // A revised implementation by Russell Johnson, which seems somewhat cleaner
     test('radio buttons2', async({page}) => {
         const usingTheGridEmailForm = page.locator('nb-card', {hasText: "Using the Grid"});
 
@@ -117,7 +117,7 @@ test('lists and dropdowns', async({page}) => {
     }
 })
 
-// My somewhat cleaner implementation
+// A revised implementation by Russell Johnson, which seems somewhat cleaner
 test('lists and dropdowns 2', async({page}) => {
     const dropDownMenu = page.locator('ngx-header nb-select');
     const optionList = page.locator('nb-option-list nb-option');
@@ -132,8 +132,47 @@ test('lists and dropdowns 2', async({page}) => {
 
     for(const color in colors){
         await dropDownMenu.click();
-        await expect(optionList).toHaveText(["Light", "Dark", "Cosmic", "Corporate"]);
+        await expect(optionList).toHaveText(["Light", "Dark", "Cosmic", "Corporate"]); // The order here is significant
         await optionList.filter({hasText: color}).click();
         await expect(header).toHaveCSS('background-color', colors[color]);
+    }
+})
+
+// An alternative (but less clean) implementation by Russell Johnson, used to demonstrate looping through each of a dropdown menu's options
+test('lists and dropdowns 3', async({page}) => {
+
+    const colors = {
+        "Light": "rgb(255, 255, 255)",
+        "Dark": "rgb(34, 43, 69)",
+        "Cosmic": "rgb(50, 50, 89)",
+        "Corporate": "rgb(255, 255, 255)"
+    };
+    const colors_keys = Object.keys(colors);
+
+    const dropDownMenu = page.locator('ngx-header nb-select');
+    const optionList = page.locator('nb-option-list nb-option');
+
+    await dropDownMenu.click(); // Dropdown the menu so that we can count the menu options and check all their text (at once)
+    const optionCount = await optionList.count();
+    await expect(optionList).toHaveText(["Light", "Dark", "Cosmic", "Corporate"]); // Checks all the dropdown menu's options' text at once
+    await optionList.nth(0).click(); // Select a menu option in order to close the menu for now [so that the click()s below works as expected]
+
+    const header = page.locator('nb-layout-header');
+
+    for (let i = 0; i < optionCount; ++i) {
+
+        await dropDownMenu.click();  // Dropdown the menu
+
+        // This is redundant with toHaveTest() above, but is included for demonstration purposes
+        await expect(optionList.nth(i)).toHaveText(colors_keys[i]);
+
+        // The following expect() is also redundant with the 1st toHaveTest() above, but (again) is included for demonstration purposes
+        const option = await optionList.nth(i).textContent();  // This gets "Light", "Dark", etc.
+        expect(option.trim()).toEqual(colors_keys[i]);  
+
+        await optionList.nth(i).click(); // Select the i-th option from the dropdown menu
+        await expect(header).toHaveCSS('background-color', colors[colors_keys[i]]); // Verify that the color has changed
+
+        await page.waitForTimeout(1000); // Wait for 1 second to allow the option selected and its corresponding color to be seen
     }
 })
