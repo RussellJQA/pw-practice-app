@@ -179,3 +179,17 @@ test('lists and dropdowns 3', async({page}) => {
         await page.waitForTimeout(1000); // Wait for 1 second to allow the option selected and its corresponding color to be seen
     }
 })
+
+// See https://stackoverflow.com/questions/17931571/freeze-screen-in-chrome-debugger-devtools-panel-for-popover-inspection
+// regarding how to freeze Chrome's debugger so that you locate the tooltip while it's being shown
+test('tooltips', async({page}) => {
+    await page.getByText('Modal & Overlays').click();
+    await page.getByText('Tooltip').click();
+
+    const toolTipCard = page.locator('nb-card', {hasText: "Tooltip Placements"})
+    await toolTipCard.getByRole('button', {name: "Top"}).hover();
+
+    // page.getByRole('tooltip'); // This could be used if that role were used here, but it's not
+    const tooltip = await page.locator('nb-tooltip').textContent();
+    expect(tooltip).toEqual('This is a tooltip');
+})
