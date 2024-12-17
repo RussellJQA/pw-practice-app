@@ -190,6 +190,17 @@ test('tooltips', async({page}) => {
     await toolTipCard.getByRole('button', {name: "Top"}).hover();
 
     // page.getByRole('tooltip'); // This could be used if that role were used here, but it's not
+
     const tooltip = await page.locator('nb-tooltip').textContent();
     expect(tooltip).toEqual('This is a tooltip');
+})
+
+// A slightly different implementation by Russell Johnson
+test('tooltips 2', async({page}) => {
+    await page.getByText('Modal & Overlays').click();
+    await page.getByText('Tooltip').click();
+
+    const toolTipCard = page.locator('nb-card', {hasText: "Tooltip Placements"})
+    await toolTipCard.getByRole('button', {name: "Top"}).hover();
+    await expect(page.locator('nb-tooltip', { hasText: 'This is a tooltip'})).toBeVisible();
 })
