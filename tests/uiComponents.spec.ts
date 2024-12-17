@@ -69,6 +69,9 @@ test.describe('Form Layouts page', () => {
 })
 
 test('check boxes', async({page}) => {
+    await page.getByText('Modal & Overlays').click();
+    await page.getByText('Toastr').click();
+
     await page.getByRole('checkbox', {name: "Hide on click"}).uncheck({force: true});
     await page.getByRole('checkbox', {name: "Prevent arising of duplicate toast"}).check({force: true});
 
