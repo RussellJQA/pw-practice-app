@@ -239,7 +239,7 @@ test('web tables 1', async({page}) => {
     await page.locator('input-editor').getByPlaceholder("E-mail").clear();
     await page.locator('input-editor').getByPlaceholder("E-mail").fill('test@test.com');
     await page.locator('.nb-checkmark').click();
-    await expect(targetRowById.locator('td').nth('5')).toHaveText('test@test.com');
+    await expect(targetRowById.locator('td').nth(5)).toHaveText('test@test.com');
 })
 
 // Grouping the 2 "Tables & Data" > "Smart Table" tests, by Russell Johnson
@@ -278,6 +278,6 @@ test.describe('Tables & Data page', () => {
         await page.locator('input-editor').getByPlaceholder("E-mail").clear();
         await page.locator('input-editor').getByPlaceholder("E-mail").fill('test@test.com');
         await page.locator('.nb-checkmark').click();
-        await expect(targetRowById.locator('td').nth('5')).toHaveText('test@test.com');
+        await expect(targetRowById.locator('td').nth(5)).toHaveText('test@test.com');
     })
 })
