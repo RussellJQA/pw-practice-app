@@ -181,7 +181,7 @@ test('lists and dropdowns 3', async({page}) => {
 })
 
 // See https://stackoverflow.com/questions/17931571/freeze-screen-in-chrome-debugger-devtools-panel-for-popover-inspection
-// regarding how to freeze Chrome's debugger so that you locate the tooltip while it's being shown
+// regarding how to freeze Chrome's debugger so that you can locate the tooltip while it's being shown
 test('tooltips', async({page}) => {
     await page.getByText('Modal & Overlays').click();
     await page.getByText('Tooltip').click();
@@ -203,4 +203,81 @@ test('tooltips 2', async({page}) => {
     const toolTipCard = page.locator('nb-card', {hasText: "Tooltip Placements"})
     await toolTipCard.getByRole('button', {name: "Top"}).hover();
     await expect(page.locator('nb-tooltip', { hasText: 'This is a tooltip'})).toBeVisible();
+})
+
+test('dialog boxes 1', async({page}) => {
+    await page.getByText('Tables & Data').click();
+    await page.getByText('Smart Table').click();
+
+    // Create a listener for the dialog box
+    page.on('dialog', dialog => { // Listen for dialog event
+        expect(dialog.message()).toEqual('Are you sure you want to delete?');
+        dialog.accept(); // Accept the dialog {Playwright instead cancels by default
+    })
+
+    await page.getByRole('table').locator('tr', {hasText: "mdo@gmail.com"}).locator('.nb-trash').click();
+    await expect(page.locator('table tr').first()).not.toHaveText("mdo@gmail.com"); // Verify that the row has been deleted
+})
+
+test('web tables 1', async({page}) => {
+    await page.getByText('Tables & Data').click();
+    await page.getByText('Smart Table').click();
+
+    //1 Get the row by any text in the row
+    const targetRow = page.getByRole('row', {name: "twitter@outlook.com"});
+    await targetRow.locator('.nb-edit').click();
+    await page.locator('input-editor').getByPlaceholder("Age").clear();
+    await page.locator('input-editor').getByPlaceholder("Age").fill('35');
+    await page.locator('.nb-checkmark').click(); // Save the changes
+
+    // Get the row based on the value in the specified column
+    await page.locator('.ng2-smart-pagination-nav').getByText('2').click();
+    const targetRowById = page.getByRole('row', {name: "11"}).filter({has: page.locator('td').nth(1).getByText('11')});
+    // "page.getByRole('row', {name: "11"})" is used to specify the 2 rows which contain a value of "11"
+    // "page.locator('td').nth(1)" is used to specify the 2nd column in the row
+    await targetRowById.locator('.nb-edit').click();
+    await page.locator('input-editor').getByPlaceholder("E-mail").clear();
+    await page.locator('input-editor').getByPlaceholder("E-mail").fill('test@test.com');
+    await page.locator('.nb-checkmark').click();
+    await expect(targetRowById.locator('td').nth('5')).toHaveText('test@test.com');
+})
+
+// Grouping the 2 "Tables & Data" > "Smart Table" tests, by Russell Johnson
+test.describe('Tables & Data page', () => {
+
+    test.beforeEach(async({page}) => {
+        await page.getByText('Tables & Data').click();
+        await page.getByText('Smart Table').click();
+    })
+
+    test('dialog boxes 2', async({page}) => {
+
+        // Create a listener for the browser (not web) dialog box
+        page.on('dialog', dialog => { // Listen for dialog event
+            expect(dialog.message()).toEqual('Are you sure you want to delete?');
+            dialog.accept(); // Accept the dialog {Playwright instead cancels by default
+        })
+
+        await page.getByRole('table').locator('tr', {hasText: "mdo@gmail.com"}).locator('.nb-trash').click();
+        await expect(page.locator('table tr').first()).not.toHaveText("mdo@gmail.com"); // Verify that the row has been deleted
+    })
+
+    test('web tables 2', async({page}) => {
+    
+        //1 Get the row by any text in the row
+        const targetRow = page.getByRole('row', {name: "twitter@outlook.com"});
+        await targetRow.locator('.nb-edit').click();
+        await page.locator('input-editor').getByPlaceholder("Age").clear();
+        await page.locator('input-editor').getByPlaceholder("Age").fill('35');
+        await page.locator('.nb-checkmark').click(); // Save the changes
+    
+        // Get the row based on the value in the specified column
+        await page.locator('.ng2-smart-pagination-nav').getByText('2').click();
+        const targetRowById = page.getByRole('row', {name: "11"}).filter({has: page.locator('td').nth(1).getByText('11')});
+        await targetRowById.locator('.nb-edit').click();
+        await page.locator('input-editor').getByPlaceholder("E-mail").clear();
+        await page.locator('input-editor').getByPlaceholder("E-mail").fill('test@test.com');
+        await page.locator('.nb-checkmark').click();
+        await expect(targetRowById.locator('td').nth('5')).toHaveText('test@test.com');
+    })
 })
