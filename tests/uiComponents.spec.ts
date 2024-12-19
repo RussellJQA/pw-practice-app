@@ -242,7 +242,7 @@ test('web tables 1', async({page}) => {
     await expect(targetRowById.locator('td').nth(5)).toHaveText('test@test.com');
 })
 
-// Grouping the 2 "Tables & Data" > "Smart Table" tests, by Russell Johnson
+// Grouping the above 2 "Tables & Data" > "Smart Table" tests, by Russell Johnson
 test.describe('Tables & Data page', () => {
 
     test.beforeEach(async({page}) => {
@@ -273,11 +273,24 @@ test.describe('Tables & Data page', () => {
     
         // Get the row based on the value in the specified column
         await page.locator('.ng2-smart-pagination-nav').getByText('2').click();
-        const targetRowById = page.getByRole('row', {name: "11"}).filter({has: page.locator('td').nth(1).getByText('11')});
+        // const targetRowById = page.getByRole('row').filter({has: page.locator('td').nth(1).getByText('11')}); // Slightly simplified from what the instructor had for this line
+        const targetRowById = await page.getByRole('row', { name: '  11'}); // This is a more direct way to get the row by its name (in its first 3 columms)
         await targetRowById.locator('.nb-edit').click();
         await page.locator('input-editor').getByPlaceholder("E-mail").clear();
         await page.locator('input-editor').getByPlaceholder("E-mail").fill('test@test.com');
-        await page.locator('.nb-checkmark').click();
+        await page.locator('.nb-checkmark').click(); // Save the changes
         await expect(targetRowById.locator('td').nth(5)).toHaveText('test@test.com');
     })
 })
+
+// Instructor's implementation of the "Datepicker" test
+test('datepicker 1', async({page}) => {
+    await page.getByText('Forms').click();
+    await page.getByText('Datepicker').click();
+
+    const calendarInputField = page.getByPlaceholder('Form Picker');
+    await calendarInputField.click();
+
+    await page.locator('[class="day-cell ng-star-inserted"]').getByText('1', {exact: true}).click();
+    await expect(calendarInputField).toHaveValue('Dec 1, 2024');
+});
