@@ -1,3 +1,5 @@
+Course exercises for "UI Automation Using Playwright with Typescript" (https://courses.testguild.com/training/ui-playwright/)
+
 Dev Environment:
 
     Node.js

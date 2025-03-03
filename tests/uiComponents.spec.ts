@@ -41,8 +41,9 @@ test.describe('Form Layouts page', () => {
 
         // Verify that "Check"-ing the 2nd option un-checks the 1st option
         await usingTheGridEmailForm.getByRole('radio', {name: "Option 2"}).check({force: true});
-        expect(await usingTheGridEmailForm.getByRole('radio', {name: 'Option 1'}).isChecked()).toBeFalsy();
-        expect(await usingTheGridEmailForm.getByRole('radio', {name: 'Option 2'}).isChecked()).toBeTruthy();
+
+        expect(usingTheGridEmailForm.getByRole('radio', {name: 'Option 1'}).isChecked()).toBeFalsy();
+        expect(usingTheGridEmailForm.getByRole('radio', {name: 'Option 2'}).isChecked()).toBeTruthy();
     })
 
     // A revised implementation by Russell Johnson, which seems somewhat cleaner
@@ -62,8 +63,8 @@ test.describe('Form Layouts page', () => {
         // Verify that "Check"-ing the 2nd option un-checks the 1st option
         const radioButton2 = usingTheGridEmailForm.getByRole('radio', {name: "Option 2"})
         await radioButton2.check({force: true});
-        expect(await radioButton1.isChecked()).toBeFalsy();
-        expect(await radioButton2.isChecked()).toBeTruthy();
+        expect(radioButton1.isChecked()).toBeFalsy();
+        expect(radioButton2.isChecked()).toBeTruthy();
     })
 
 })
@@ -79,13 +80,11 @@ test('check boxes', async({page}) => {
     const allBoxes = page.getByRole('checkbox');
     for(const box of await allBoxes.all()) {
         await box.check({force: true});
-        // expect(await box.isChecked()).toBeTruthy(); // This works, but TabNine suggests the following instead
         await expect(box).toBeChecked();
     }
 
     for(const box of await allBoxes.all()) {
         await box.uncheck({force: true});
-        //expect(await box.isChecked()).toBeFalsy(); // This works, but TabNine suggests the following instead
         await expect(box).not.toBeChecked();
     }
 })
@@ -274,7 +273,7 @@ test.describe('Tables & Data page', () => {
         // Get the row based on the value in the specified column
         await page.locator('.ng2-smart-pagination-nav').getByText('2').click();
         // const targetRowById = page.getByRole('row').filter({has: page.locator('td').nth(1).getByText('11')}); // Slightly simplified from what the instructor had for this line
-        const targetRowById = await page.getByRole('row', { name: '  11'}); // This is a more direct way to get the row by its name (in its first 3 columms)
+        const targetRowById = page.getByRole('row', { name: '  11'}); // This is a more direct way to get the row by its name (in its first 3 columns)
         await targetRowById.locator('.nb-edit').click();
         await page.locator('input-editor').getByPlaceholder("E-mail").clear();
         await page.locator('input-editor').getByPlaceholder("E-mail").fill('test@test.com');
