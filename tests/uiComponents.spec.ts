@@ -42,8 +42,8 @@ test.describe('Form Layouts page', () => {
         // Verify that "Check"-ing the 2nd option un-checks the 1st option
         await usingTheGridEmailForm.getByRole('radio', {name: "Option 2"}).check({force: true});
 
-        expect(usingTheGridEmailForm.getByRole('radio', {name: 'Option 1'}).isChecked()).toBeFalsy();
-        expect(usingTheGridEmailForm.getByRole('radio', {name: 'Option 2'}).isChecked()).toBeTruthy();
+        expect(await usingTheGridEmailForm.getByRole('radio', {name: 'Option 1'}).isChecked()).toBeFalsy();
+        expect(await usingTheGridEmailForm.getByRole('radio', {name: 'Option 2'}).isChecked()).toBeTruthy();
     })
 
     // A revised implementation by Russell Johnson, which seems somewhat cleaner
@@ -63,8 +63,8 @@ test.describe('Form Layouts page', () => {
         // Verify that "Check"-ing the 2nd option un-checks the 1st option
         const radioButton2 = usingTheGridEmailForm.getByRole('radio', {name: "Option 2"})
         await radioButton2.check({force: true});
-        expect(radioButton1.isChecked()).toBeFalsy();
-        expect(radioButton2.isChecked()).toBeTruthy();
+        expect(await radioButton1.isChecked()).toBeFalsy();
+        expect(await radioButton2.isChecked()).toBeTruthy();
     })
 
 })
